@@ -1,0 +1,50 @@
+{
+  "note": "Curated camera-roll edit. src = frame number in the original Camera Roll (Aesthetic_Vibes_NN.jpeg). slug is the published file name and DB key.",
+  "chapters": {
+    "river": { "ar": "نهرٌ وسماء", "en": "River & Sky" },
+    "table": { "ar": "طاولةٌ وقهوة", "en": "Table & Cup" },
+    "night": { "ar": "ليلٌ وحركة", "en": "Night & Motion" },
+    "small": { "ar": "أشياءُ صغيرة", "en": "Small Things" }
+  },
+  "photos": [
+    { "src": 2,   "slug": "ph-01-boat-in-the-mist",      "chapter": "river", "title_ar": "قاربٌ في الضباب",   "title_en": "Boat in the Mist",    "tags": ["sea", "sky", "solitude"] },
+    { "src": 9,   "slug": "ph-02-city-on-the-water",      "chapter": "river", "title_ar": "مدينةٌ على الماء",  "title_en": "City on the Water",   "tags": ["city", "sky", "sea"] },
+    { "src": 4,   "slug": "ph-03-field-at-dusk",          "chapter": "river", "title_ar": "حقلٌ في الغروب",    "title_en": "Field at Dusk",       "tags": ["sky", "light", "memory"] },
+    { "src": 5,   "slug": "ph-04-a-tree-alone",           "chapter": "river", "title_ar": "شجرةٌ وحدها",       "title_en": "A Tree Alone",        "tags": ["sky", "solitude", "light"] },
+    { "src": 43,  "slug": "ph-05-sinking-light",          "chapter": "river", "title_ar": "ضوءٌ يغرق",         "title_en": "Sinking Light",       "tags": ["sky", "sea", "light"] },
+    { "src": 76,  "slug": "ph-06-from-the-window",        "chapter": "river", "title_ar": "من النافذة",        "title_en": "From the Window",     "tags": ["window", "sky", "city"] },
+    { "src": 35,  "slug": "ph-07-glasses-on-the-nile",    "chapter": "river", "title_ar": "نظّارةٌ على النيل",  "title_en": "Glasses on the Nile", "tags": ["window", "memory", "everyday"] },
+    { "src": 186, "slug": "ph-08-sun-on-the-rooftops",    "chapter": "river", "title_ar": "شمسٌ على السطوح",   "title_en": "Sun on the Rooftops", "tags": ["window", "light", "everyday"] },
+    { "src": 48,  "slug": "ph-09-water-mirror",           "chapter": "river", "title_ar": "مرآةُ الماء",       "title_en": "Water Mirror",        "tags": ["sky", "sea", "memory"] },
+
+    { "src": 15,  "slug": "ph-10-cup-and-book",           "chapter": "table", "title_ar": "فنجانٌ وكتاب",      "title_en": "Cup and Book",        "tags": ["hands", "everyday", "memory"] },
+    { "src": 57,  "slug": "ph-11-light-on-the-table",     "chapter": "table", "title_ar": "ضوءٌ على الطاولة",  "title_en": "Light on the Table",  "tags": ["light", "everyday", "shadow"] },
+    { "src": 120, "slug": "ph-12-the-pour",               "chapter": "table", "title_ar": "اليدُّ التي تسكب",   "title_en": "The Pour",            "tags": ["hands", "everyday", "detail"] },
+    { "src": 179, "slug": "ph-13-glowing-cup",            "chapter": "table", "title_ar": "فنجانٌ يتوهّج",     "title_en": "Glowing Cup",         "tags": ["detail", "light", "everyday"] },
+    { "src": 197, "slug": "ph-14-from-above",             "chapter": "table", "title_ar": "من فوق",            "title_en": "From Above",          "tags": ["detail", "light", "everyday"] },
+    { "src": 100, "slug": "ph-15-the-tea-set",            "chapter": "table", "title_ar": "طقمُ الشاي",        "title_en": "The Tea Set",         "tags": ["everyday", "memory", "detail"] },
+    { "src": 110, "slug": "ph-16-between-the-lines",      "chapter": "table", "title_ar": "بين السطور",        "title_en": "Between the Lines",   "tags": ["everyday", "memory", "solitude"] },
+    { "src": 146, "slug": "ph-17-small-notebook",         "chapter": "table", "title_ar": "دفترٌ صغير",        "title_en": "Small Notebook",      "tags": ["hands", "detail", "everyday"] },
+    { "src": 94,  "slug": "ph-18-under-the-lamp",         "chapter": "table", "title_ar": "تحت المصباح",       "title_en": "Under the Lamp",      "tags": ["light", "everyday", "solitude"] },
+
+    { "src": 80,  "slug": "ph-19-long-road",              "chapter": "night", "title_ar": "طريقٌ طويل",        "title_en": "Long Road",           "tags": ["night", "motion", "street"] },
+    { "src": 99,  "slug": "ph-20-moving-lights",          "chapter": "night", "title_ar": "أضواءٌ تسير",       "title_en": "Moving Lights",       "tags": ["night", "motion", "street"] },
+    { "src": 128, "slug": "ph-21-start",                  "chapter": "night", "title_ar": "ابدأ",              "title_en": "Start",               "tags": ["night", "light", "street"] },
+    { "src": 129, "slug": "ph-22-open-late",              "chapter": "night", "title_ar": "مفتوحٌ متأخراً",    "title_en": "Open Late",           "tags": ["night", "street", "everyday"] },
+    { "src": 135, "slug": "ph-23-last-train",             "chapter": "night", "title_ar": "آخرُ قطار",         "title_en": "Last Train",          "tags": ["night", "motion", "street"] },
+    { "src": 139, "slug": "ph-24-el-marg-direction",      "chapter": "night", "title_ar": "اتجاهُ المرج",       "title_en": "El Marg Direction",   "tags": ["street", "motion", "everyday"] },
+    { "src": 65,  "slug": "ph-25-the-dashboard",          "chapter": "night", "title_ar": "لوحةُ العدّادات",    "title_en": "The Dashboard",       "tags": ["night", "motion", "window"] },
+    { "src": 40,  "slug": "ph-26-live-music",             "chapter": "night", "title_ar": "موسيقى حيّة",       "title_en": "Live Music",          "tags": ["night", "light", "culture"] },
+    { "src": 96,  "slug": "ph-27-late-dinner",            "chapter": "night", "title_ar": "عشاءٌ متأخر",       "title_en": "Late Dinner",         "tags": ["night", "food", "everyday"] },
+
+    { "src": 3,   "slug": "ph-28-embers",                 "chapter": "small", "title_ar": "جمر",               "title_en": "Embers",              "tags": ["light", "texture", "detail"] },
+    { "src": 111, "slug": "ph-29-shadow-on-the-wrist",    "chapter": "small", "title_ar": "ظلٌّ على المعصم",    "title_en": "Shadow on the Wrist", "tags": ["hands", "shadow", "light"] },
+    { "src": 79,  "slug": "ph-30-hand-on-the-glass",      "chapter": "small", "title_ar": "اليدُ على الزجاج",  "title_en": "Hand on the Glass",   "tags": ["hands", "light", "solitude"] },
+    { "src": 42,  "slug": "ph-31-white-on-brick",         "chapter": "small", "title_ar": "أبيضُ على الطوب",   "title_en": "White on Brick",      "tags": ["texture", "detail", "light"] },
+    { "src": 217, "slug": "ph-32-warm-bread",             "chapter": "small", "title_ar": "خبزٌ سخن",          "title_en": "Warm Bread",          "tags": ["food", "everyday", "detail"] },
+    { "src": 117, "slug": "ph-33-reading-by-the-river",   "chapter": "small", "title_ar": "قراءةٌ على النهر",   "title_en": "Reading by the River", "tags": ["hands", "memory", "everyday"] },
+    { "src": 202, "slug": "ph-34-ice-cream",              "chapter": "small", "title_ar": "مثلجات",            "title_en": "Ice Cream",           "tags": ["food", "everyday", "hands"] },
+    { "src": 58,  "slug": "ph-35-we-made-it",             "chapter": "small", "title_ar": "وصلنا",             "title_en": "We Made It",          "tags": ["travel", "street", "everyday"] },
+    { "src": 53,  "slug": "ph-36-cup-and-glasses",        "chapter": "small", "title_ar": "كوبٌ ونظّارة",       "title_en": "Cup and Glasses",     "tags": ["detail", "texture", "everyday"] }
+  ]
+}

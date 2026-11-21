@@ -44,20 +44,20 @@
       artist: "الفنّان",
       like: "إعجاب",
       save: "حفظ",
-      askAbout: "اسأل عن اللوحة",
+      askAbout: "اسأل عن العمل",
       comments: "التعليقات",
       noComments: "كن أول من يعلّق.",
       commentPh: "اكتب تعليقاً…",
       send: "إرسال",
-      loginToComment: "سجّل دخولك لتشارك رأيك في اللوحة.",
+      loginToComment: "سجّل دخولك لتشارك رأيك في العمل.",
       loginFirst: "سجّل دخولك أولاً",
-      emptyFavs: "لم تحفظ لوحات بعد. افتح أي لوحة واضغط «حفظ».",
+      emptyFavs: "لم تحفظ عملاً بعد. افتح أي عمل واضغط «حفظ».",
       demoNote: "وضع تجريبي: الحسابات محفوظة في هذا المتصفح فقط، وأول حساب يصبح مالك المعرض. اربط Supabase لتشغيل الحسابات الحقيقية.",
       noThreads: "لا رسائل بعد.",
       pickThread: "اختر محادثة",
-      chatEmpty: "ابدأ الحديث — اسأل عن لوحة أو اطلب طبعة.",
+      chatEmpty: "ابدأ الحديث — اسأل عن عمل أو اطلب طبعة.",
       msgPh: "اكتب رسالتك…",
-      msgAbout: "بخصوص لوحة",
+      msgAbout: "بخصوص عمل",
       you: "أنت",
       delete: "حذف",
       confirmDelete: "حذف هذا التعليق؟",
@@ -99,20 +99,20 @@
       artist: "Artist",
       like: "Like",
       save: "Save",
-      askAbout: "Ask about this plate",
+      askAbout: "Ask about this work",
       comments: "Comments",
       noComments: "Be the first to comment.",
       commentPh: "Write a comment…",
       send: "Send",
-      loginToComment: "Sign in to share your thoughts on this plate.",
+      loginToComment: "Sign in to share your thoughts on this work.",
       loginFirst: "Sign in first",
-      emptyFavs: "Nothing saved yet. Open a plate and hit “Save”.",
+      emptyFavs: "Nothing saved yet. Open a work and hit “Save”.",
       demoNote: "Demo mode: accounts live in this browser only and the first account owns the gallery. Connect Supabase for real accounts.",
       noThreads: "No messages yet.",
       pickThread: "Pick a conversation",
-      chatEmpty: "Start the conversation — ask about a plate or request a print.",
+      chatEmpty: "Start the conversation — ask about a work or request a print.",
       msgPh: "Write your message…",
-      msgAbout: "About the plate",
+      msgAbout: "About the work",
       you: "You",
       delete: "Delete",
       confirmDelete: "Delete this comment?",
@@ -682,7 +682,7 @@
   function renderFavs() {
     var items = Array.from(faved).map(workById).filter(Boolean);
     var c = $("#favCount");
-    if (c) c.textContent = items.length ? (L() === "ar" ? items.length + " لوحة" : items.length + " works") : "";
+    if (c) c.textContent = items.length ? (L() === "ar" ? items.length + " عملاً" : items.length + " works") : "";
     var body = $("#favBody");
     if (!items.length) {
       body.innerHTML = '<div class="fav-empty">' + esc(t("emptyFavs")) + "</div>";
@@ -691,7 +691,8 @@
     body.innerHTML = '<div class="fav-grid">' + items.map(function (it) {
       var title = L() === "ar" ? it.t : it.en;
       return '<button class="fav-item" type="button" data-id="' + esc(idOf(it)) + '">' +
-        '<img src="' + esc(G.thumbOf(it)) + '" alt="' + esc(title) + '" loading="lazy">' +
+        '<img src="' + esc(G.thumbOf(it)) + '" alt="' + esc(title) + '" loading="lazy"' +
+        (it.w && it.h ? ' style="aspect-ratio:' + it.w + '/' + it.h + '"' : "") + '>' +
         "<span>" + esc(title) + "</span></button>";
     }).join("") + "</div>";
   }

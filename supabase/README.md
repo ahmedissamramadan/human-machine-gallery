@@ -20,8 +20,11 @@ real accounts, shared comments and private messages, connect a free Supabase pro
 
 1. `supabase/schema.sql` — الجداول، الصلاحيات (RLS)، دالة الإحصاءات، وحاوية الصور.
 2. `supabase/seed-works.sql` — إدخال اللوحات الـ36 الحالية.
+3. `supabase/seed-photos.sql` — إدخال الصور الفوتوغرافية الـ36 (مولّد آلياً من `photos.json`).
 
-كلاهما آمن لإعادة التشغيل (idempotent).
+كلها آمنة لإعادة التشغيل (idempotent). إذا شغّلت `seed-photos.sql` قبل رفع الصور
+إلى حاوية التخزين فستظهر مربّعات فارغة — استخدم `scripts/publish-photos.py` لرفعها
+ثم أعد تشغيل الملف.
 
 ## ٣) اربط الواجهة · Connect the front-end
 
