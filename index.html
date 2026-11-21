@@ -354,6 +354,7 @@
     .lb-cap{padding-bottom:18px}
   }
 </style>
+<link rel="stylesheet" href="css/app.css">
 </head>
 <body>
 
@@ -372,6 +373,7 @@
       <a href="#collection" data-jump="sur" data-i18n="navSurreal">الفن السريالي</a>
     </nav>
     <span class="head-count" id="headCount"></span>
+    <div class="acct" id="acct"></div>
     <button class="lang-btn" id="langBtn" type="button" aria-label="Switch language">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 3 2.5 15 0 18M12 3c-2.5 3-2.5 15 0 18"/></svg>
       <span id="langLabel">EN</span>
@@ -515,25 +517,31 @@
     </button>
   </div>
 
-  <div class="lb-stage">
-    <button class="lb-nav lb-prev" id="lbPrev">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
-    </button>
-    <img id="lbImg" src="" alt="">
-    <button class="lb-nav lb-next" id="lbNext">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
-    </button>
-  </div>
-
-  <div class="lb-cap">
-    <h3 id="lbTitle"></h3>
-    <p class="en" id="lbEn"></p>
-    <div class="tags" id="lbTags"></div>
-    <div class="lb-actions">
-      <a id="lbFull" href="#" target="_blank" rel="noopener" data-i18n="lbFull">فتح بالحجم الأصلي</a>
-      <a id="lbDl" href="#" download data-i18n="lbDl">تنزيل الصورة</a>
-      <button id="lbCopy" type="button" data-i18n="lbCopy">نسخ رابط اللوحة</button>
+  <div class="lb-body">
+    <div class="lb-stage">
+      <button class="lb-nav lb-prev" id="lbPrev">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
+      </button>
+      <img id="lbImg" src="" alt="">
+      <button class="lb-nav lb-next" id="lbNext">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
+      </button>
     </div>
+
+    <aside class="lb-side">
+      <div class="lb-cap">
+        <h3 id="lbTitle"></h3>
+        <p class="en" id="lbEn"></p>
+        <div class="tags" id="lbTags"></div>
+        <div class="lb-react" id="lbReact"></div>
+        <div class="lb-actions">
+          <a id="lbFull" href="#" target="_blank" rel="noopener" data-i18n="lbFull">فتح بالحجم الأصلي</a>
+          <a id="lbDl" href="#" download data-i18n="lbDl">تنزيل الصورة</a>
+          <button id="lbCopy" type="button" data-i18n="lbCopy">نسخ رابط اللوحة</button>
+        </div>
+      </div>
+      <div class="lb-comments" id="lbComments"></div>
+    </aside>
   </div>
 </div>
 
@@ -776,7 +784,7 @@ function cardFor(it) {
 
   el.innerHTML = `
     <button class="card-btn" data-i="${it.i}" aria-label="${primary}">
-      <img src="${thumb(it.f)}" width="402" height="720" alt="${primary} — ${secondary}" loading="lazy" decoding="async">
+      <img src="${it.thumb || thumb(it.f)}" width="402" height="720" alt="${primary} — ${secondary}" loading="lazy" decoding="async">
       <span class="card-veil">
         <span class="n">${CATS[it.c].short} ${pad(it.i + 1)}</span>
         <span class="card-t">${primary}</span>
@@ -872,6 +880,7 @@ function applyFilter() {
     card.style.animationDelay = Math.min(n * 22, 420) + "ms";
   });
   observeCards();
+  document.dispatchEvent(new CustomEvent("cards:rendered", { detail: { count: list.length } }));
 }
 
 /* ============================================================
@@ -914,7 +923,7 @@ function renderLB() {
   const primary = lang === "ar" ? it.t : it.en;
   const secondary = lang === "ar" ? it.en : it.t;
 
-  lbImg.src = full(it.f);
+  lbImg.src = it.full || full(it.f);
   lbImg.alt = primary;
   lbIdx.textContent = `${pad(cur + 1)} / ${pad(view.length)}`;
   lbCat.textContent = CATS[it.c][lang];
@@ -923,14 +932,16 @@ function renderLB() {
   lbEn.textContent = secondary;
   lbEn.setAttribute("lang", lang === "ar" ? "en" : "ar");
   lbTags.innerHTML = it.tags.map(k => `<i>${tagLabel(k, lang)}</i>`).join("");
-  lbFull.href = full(it.f);
-  lbDl.href = full(it.f);
+  lbFull.href = it.full || full(it.f);
+  lbDl.href = it.full || full(it.f);
   lbDl.setAttribute("download", it.f + ".jpg");
 
   [cur + 1, cur - 1].forEach(n => {
     const j = view[(n + view.length) % view.length];
-    if (j != null) { const im = new Image(); im.src = full(ITEMS[j].f); }
+    if (j != null) { const im = new Image(); im.src = ITEMS[j].full || full(ITEMS[j].f); }
   });
+
+  document.dispatchEvent(new CustomEvent("lb:render", { detail: { item: it, index: i, pos: cur, total: view.length } }));
 }
 
 function openLB(i, fromHash) {
@@ -951,6 +962,7 @@ function closeLB(fromHash) {
   lbImg.src = "";
   if (!fromHash) history.replaceState(null, "", location.pathname + location.search);
   if (lastFocus) lastFocus.focus();
+  document.dispatchEvent(new CustomEvent("lb:close"));
 }
 
 function step(d) {
@@ -1012,6 +1024,8 @@ function applyLang(next, opts) {
   try { localStorage.setItem("gallery-lang", lang); } catch (e) {}
 
   if (opts && opts.focus) langBtn.focus();
+
+  document.dispatchEvent(new CustomEvent("lang:changed", { detail: { lang } }));
 }
 
 /* ============================================================
@@ -1113,6 +1127,36 @@ applyLang(lang);
 
 const deep = readHash();
 if (deep != null) openLB(deep, true);
+
+/* ------------------------------------------------------------
+   bridge for the interactive layer (js/app.js)
+   ------------------------------------------------------------ */
+window.__gallery = {
+  ITEMS, CATS, TAGS, STR,
+  pad, tagLabel,
+  getLang: () => lang,
+  thumbOf: it => it.thumb || thumb(it.f),
+  fullOf: it => it.full || full(it.f),
+  refresh: () => applyLang(lang),
+  openById: id => {
+    const idx = ITEMS.findIndex(x => (x.id || x.f) === id);
+    if (idx < 0) return false;
+    openLB(idx);
+    return true;
+  },
+  closeLightbox: () => closeLB(),
+  isOpen: () => lb.dataset.open === "true",
+  current: () => (view[cur] != null ? ITEMS[view[cur]] : null),
+  setFilter: (cat) => {
+    activeCat = cat;
+    [...chips.children].forEach(c => c.setAttribute("aria-pressed", c.dataset.k === cat));
+    applyFilter();
+  }
+};
 </script>
+<script src="js/config.js"></script>
+<script src="vendor/supabase-js.min.js"></script>
+<script src="js/store.js"></script>
+<script src="js/app.js"></script>
 </body>
 </html>
