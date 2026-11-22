@@ -418,7 +418,14 @@
       console.warn("[gallery] loadWorks:", e);
     }
     if (rows && rows.length) {
+      // the database stores text only; size and chapter stay in the
+      // generated photo manifest, so merge them back by slug
+      var photoMeta = {};
+      (window.PHOTO_ITEMS || []).forEach(function (p) {
+        photoMeta[p.f] = { w: p.w, h: p.h, ch: p.ch };
+      });
       var items = rows.map(function (r, idx) {
+        var meta = photoMeta[r.slug] || {};
         return {
           f: r.slug,
           t: r.title_ar,
@@ -429,6 +436,9 @@
           thumb: r.thumb_url,
           full: r.full_url,
           sort: r.sort != null ? r.sort : idx,
+          w: meta.w,
+          h: meta.h,
+          ch: meta.ch,
           i: idx
         };
       });

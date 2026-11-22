@@ -32,7 +32,7 @@ create or replace function public.protect_role()
 returns trigger
 language plpgsql
 security definer
-set search_path = public
+set search_path = ''
 as $$
 begin
   if new.role is distinct from old.role and auth.uid() is not null and not public.is_artist() then
@@ -51,7 +51,7 @@ create or replace function public.handle_new_user()
 returns trigger
 language plpgsql
 security definer
-set search_path = public
+set search_path = ''
 as $$
 begin
   insert into public.profiles (id, display_name)
@@ -74,7 +74,7 @@ returns boolean
 language sql
 stable
 security definer
-set search_path = public
+set search_path = ''
 as $$
   select exists (select 1 from public.profiles p where p.id = auth.uid() and p.role = 'artist');
 $$;
@@ -128,6 +128,10 @@ create table if not exists public.favorites (
   primary key (user_id, work_id)
 );
 
+-- counters read by work_stats(): keep them fast as the tables grow
+create index if not exists likes_work_idx     on public.likes (work_id);
+create index if not exists favorites_work_idx on public.favorites (work_id);
+
 alter table public.likes     enable row level security;
 alter table public.favorites enable row level security;
 
@@ -161,7 +165,7 @@ returns table (work_id uuid, likes int, favorites int, comments int)
 language sql
 stable
 security definer
-set search_path = public
+set search_path = ''
 as $$
   select w.id,
          (select count(*)::int from public.likes     l where l.work_id = w.id),
@@ -198,7 +202,7 @@ create policy comments_insert on public.comments
 
 drop policy if exists comments_delete on public.comments;
 create policy comments_delete on public.comments
-  for delete using (auth.uid() = user_id or public.is_artist());
+  for delete to authenticated using (auth.uid() = user_id or public.is_artist());
 
 -- comments joined with the author's display name (public view)
 create or replace function public.work_comments(p_work uuid)
@@ -206,7 +210,7 @@ returns table (id uuid, user_id uuid, display_name text, body text, created_at t
 language sql
 stable
 security definer
-set search_path = public
+set search_path = ''
 as $$
   select c.id, c.user_id, coalesce(p.display_name, 'Anonymous'), c.body, c.created_at
   from public.comments c
@@ -259,7 +263,7 @@ returns table (user_id uuid, display_name text, last_body text, last_at timestam
 language sql
 stable
 security definer
-set search_path = public
+set search_path = ''
 as $$
   select m.user_id,
          coalesce(p.display_name, 'Anonymous') as display_name,
@@ -276,7 +280,39 @@ revoke all on function public.inbox() from public;
 grant execute on function public.inbox() to authenticated;
 
 -- ------------------------------------------------------------
--- 6. storage bucket for uploaded photography
+-- 6. privileges  (defence in depth: RLS plus column-level grants)
+-- ------------------------------------------------------------
+-- Supabase hands ALL on every public table to anon/authenticated by
+-- default. Take that back and hand out only what the app really needs,
+-- so a policy mistake can never mutate more than intended.
+revoke all on public.profiles  from anon, authenticated;
+revoke all on public.works     from anon, authenticated;
+revoke all on public.likes     from anon, authenticated;
+revoke all on public.favorites from anon, authenticated;
+revoke all on public.comments  from anon, authenticated;
+revoke all on public.messages  from anon, authenticated;
+
+-- visible to everyone
+grant select on public.works, public.profiles, public.comments to anon, authenticated;
+
+-- a signed-in user may edit only their own public fields, never their role
+grant update (display_name, avatar_url) on public.profiles to authenticated;
+
+-- the catalogue is readable by all, writable by the owner (RLS decides)
+grant insert, update, delete on public.works to authenticated;
+
+grant select, insert, delete on public.likes     to authenticated;
+grant select, insert, delete on public.favorites to authenticated;
+
+grant insert, delete on public.comments to authenticated;
+
+-- messages: a participant may only ever touch read_at, never rewrite
+-- words that somebody else wrote
+grant select, insert, delete on public.messages to authenticated;
+grant update (read_at) on public.messages to authenticated;
+
+-- ------------------------------------------------------------
+-- 7. storage bucket for uploaded photography
 -- ------------------------------------------------------------
 insert into storage.buckets (id, name, public)
 values ('gallery', 'gallery', true)
@@ -292,7 +328,7 @@ create policy gallery_artist_write on storage.objects
   with check (bucket_id = 'gallery' and public.is_artist());
 
 -- ------------------------------------------------------------
--- 7. done
+-- 8. done
 --    بعد إنشاء حسابك، ارفع صلاحيتك إلى artist:
 --    update public.profiles set role = 'artist' where id = (
 --      select id from auth.users where email = 'YOUR_EMAIL'

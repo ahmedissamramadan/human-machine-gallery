@@ -23,16 +23,17 @@ photographs, with accounts, likes, saves, comments and private messages.
 | ✉️ **الرسائل** | محادثة خاصة بين كل زائر والفنّان (صندوق موحّد للفنّان مع عدّاد غير المقروء) |
 | 🔗 **روابط مباشرة** | `#p=14` يفتح العمل، `?lang=en` يفتح بالإنجليزية |
 
-هناك وضعان:
+هناك وضعان، يُختاران تلقائياً من `js/config.js`:
 
-- **تجريبي (افتراضي):** الحسابات والتعليقات تُحفظ في متصفحك فقط — يعمل بلا إنترنت ولا حساب.
-- **سحابي:** بعد إضافة مفاتيح Supabase في `js/config.js` تصبح الحسابات والتعليقات
-  والرسائل حقيقية ومشتركة بين كل الزوّار.
+- **سحابي (الحالي):** الحسابات والتعليقات والإعجاب والرسائل حقيقية ومشتركة،
+  وقاعدة البيانات هي مصدر الأعمال الـ262.
+- **تجريبي:** إذا فرّغت مفتاحي Supabase، تعود الحسابات إلى `localStorage`
+  داخل المتصفح — مفيد للعرض بلا إنترنت.
 
 ## التشغيل · Run locally
 
 ```bash
-open index.html                 # الوضع التجريبي يعمل مباشرة
+open index.html                 # يقرأ الأعمال من قاعدة البيانات
 # أو
 python3 -m http.server 8732     # ثم: http://localhost:8732
 ```
@@ -40,8 +41,9 @@ python3 -m http.server 8732     # ثم: http://localhost:8732
 ## تفعيل الحسابات الحقيقية · Enable real accounts
 
 1. أنشئ مشروعاً مجانياً على [supabase.com](https://supabase.com).
-2. شغّل `supabase/schema.sql` ثم `supabase/seed-works.sql` ثم `supabase/seed-photos.sql` في محرر SQL.
-3. انسخ `Project URL` و `anon key` إلى `js/config.js`.
+2. SQL Editor → الصق `supabase/go-live.sql` كاملاً → Run (المخطط + الـ262 عملاً).
+3. **Project Settings → API Keys**: انسخ `Project URL` و **Publishable key**
+   (`sb_publishable_…`) إلى `js/config.js`.
 4. سجّل حسابك ثم ارفع صلاحيتك إلى `artist` (الأمر في `supabase/README.md`).
 
 الدليل الكامل خطوة بخطوة: **[supabase/README.md](supabase/README.md)**
@@ -65,6 +67,7 @@ photos-inbox/              أصل صور الكاميرا (غير متتبَّع
 supabase/schema.sql        الجداول + صلاحيات RLS + حاوية الصور
 supabase/seed-works.sql    إدخال اللوحات الـ36
 supabase/seed-photos.sql   إدخال الصور الـ226
+supabase/go-live.sql       المخطط + كل الأعمال في لصقة واحدة (مُولَّد)
 supabase/README.md         دليل الربط خطوة بخطوة
 scripts/build-photos.py    بناء نسخ العرض محلياً من photos.json
 scripts/publish-photos.py  نشر صور جديدة إلى التخزين + قاعدة البيانات
@@ -89,7 +92,8 @@ python3 scripts/publish-photos.py --manifest photos.json   # للسحابة لا
 ## ملاحظات · Notes
 
 - لوحات الآلة الـ36 **مولّدة بالذكاء الاصطناعي**؛ الصور الـ226 الأخرى فوتوغرافية من كاميرا المؤلف.
-- مفتاح `anon` في `js/config.js` عام وآمن؛ الحماية الحقيقية في سياسات RLS.
+- مفتاح `Publishable` في `js/config.js` عام وآمن؛ الحماية الحقيقية في سياسات RLS
+  والمنح على مستوى الأعمدة (لا يمكن لأحد تعديل `role` أو نص رسالة غيره).
 - مفتاح `service_role` يبقى في `.env` فقط ولا يُنشر أبداً.
 - المعرض يعمل بلا أي اعتمادية خارجية (لا خطوط ولا سكربتات من CDN).
 

@@ -16,67 +16,85 @@ real accounts, shared comments and private messages, connect a free Supabase pro
 
 ## ٢) شغّل المخطط · Run the schema
 
-في **SQL Editor** شغّل الملفات بالترتيب:
+أسهل طريقة: ملف واحد فيه كل شيء (المخطط + ٣٦ لوحة + ٢٢٦ صورة):
+
+```bash
+# على جهازك، من جذر المشروع
+pbcopy < supabase/go-live.sql
+```
+
+ثم في **SQL Editor → New query** الصق (⌘V) واضغط **Run**. آمن لإعادة التشغيل.
+
+بديل خطوة بخطوة، بالترتيب:
 
 1. `supabase/schema.sql` — الجداول، الصلاحيات (RLS)، دالة الإحصاءات، وحاوية الصور.
 2. `supabase/seed-works.sql` — إدخال اللوحات الـ36 الحالية.
 3. `supabase/seed-photos.sql` — إدخال الصور الفوتوغرافية الـ226 (مولّد آلياً من `photos.json`).
 
-كلها آمنة لإعادة التشغيل (idempotent). إذا شغّلت `seed-photos.sql` قبل رفع الصور
-إلى حاوية التخزين فستظهر مربّعات فارغة — استخدم `scripts/publish-photos.py` لرفعها
-ثم أعد تشغيل الملف.
+> صور المعرض تُخدَم من المستودع نفسه (`assets/`)، لا من حاوية التخزين،
+> لذلك لا تحتاج رفع أي ملف إلى Supabase. الحاوية موجودة فقط لمن يريد
+> لاحقاً نقل الصور إلى CDN الخاص بـSupabase.
 
 ## ٣) اربط الواجهة · Connect the front-end
 
-**Project Settings → API** وانسخ:
+Supabase الجديد لم يعد فيه قسم اسمه **API**؛ القيم في
+**Project Settings → API Keys**:
 
 | من Supabase | إلى الملف |
 |---|---|
 | Project URL | `js/config.js` → `SUPABASE_URL` |
-| anon public key | `js/config.js` → `SUPABASE_ANON_KEY` |
+| **Publishable key** (`sb_publishable_…`) | `js/config.js` → `SUPABASE_ANON_KEY` |
 
-> مفتاح `anon` عام وآمن للنشر: الصلاحيات الفعلية تأتي من سياسات RLS في `schema.sql`.
+> الـpublishable key هو بديل مفتاح `anon` القديم ويقوم بنفس الدور. المفتاح القديم
+> ما زال في الصفحة تحت **View legacy API keys** لكنه يتوقف في أوائل 2027.
+> أي مفتاح من النوعين عام وآمن للنشر: الصلاحيات الفعلية تأتي من RLS + المنح
+> على مستوى الأعمدة في `schema.sql`.
 
 بعد الحفظ، يتحول الموقع تلقائياً من الوضع التجريبي إلى الحسابات الحقيقية.
 
 ## ٤) اضبط المصادقة · Auth settings
 
-- **Authentication → Providers → Email**: أوقف `Confirm email` إن أردت تسجيلاً فورياً
-  بدون رسالة تأكيد (مناسب لمعرض فني).
+- **Authentication → Sign In / Providers → Email**: أوقف `Confirm email` إن أردت
+  تسجيلاً فورياً بلا رسالة تأكيد. إبقاؤه مفعّلاً أكثر أماناً (يمنع الحسابات الوهمية)
+  والموقع يعرض رسالة «راجع بريدك» في الحالتين.
 - **Authentication → URL Configuration**:
   - `Site URL`: `https://ahmedissamramadan.github.io/human-machine-gallery/`
   - `Redirect URLs`: أضف نفس الرابط + `http://localhost:8732/` للتجربة المحلية.
 
 ## ٥) اجعل حسابك «الفنّان» · Make your account the artist
 
-1. سجّل حساباً من الموقع نفسه (أول حساب).
-2. في **SQL Editor** شغّل:
+1. سجّل حساباً من الموقع نفسه.
+2. في **SQL Editor** شغّل (بدّل البريد ببريدك):
 
 ```sql
 update public.profiles
 set role = 'artist'
-where id = (select id from auth.users where email = 'YOUR_EMAIL_HERE');
+where id = (select id from auth.users where email = 'ahmedissam.personal@gmail.com');
 ```
 
+3. أعد تحميل الصفحة — ستظهر «رسائلي» بصندوق الفنّان.
+
 حساب الفنّان وحده يستطيع:
-- رفع الصور إلى حاوية `gallery` (عبر `scripts/publish-photos.py`).
 - حذف أي تعليق.
 - رؤية كل محادثات الزوّار في «رسائلي» والرد عليها.
+- تعديل الكتالوج (RLS: `is_artist()`).
 
 ## ٦) أضف صوراً جديدة · Add new photography
 
 ```bash
-# 1. انسخ الصور إلى مجلد داخل المشروع (مثلاً photos-inbox/)
-# 2. أنشئ ملف .env في جذر المشروع:
-#    SUPABASE_URL=https://xxxx.supabase.co
-#    SUPABASE_SERVICE_KEY=eyJ...   ← service_role (سري، لا تنشره)
-# 3. بعد تجهيز البيان (manifest.json) شغّل:
-python3 scripts/publish-photos.py --manifest photos.json
+# 1. أضف الإطار إلى photos.json (src = رقم الإطار، عنوانان، فصل، وسوم)
+# 2. أعد بناء النسخ المضغوطة والمخطوطات:
+python3 scripts/build-photos.py
+# 3. أعد تشغيل supabase/seed-photos.sql (أو go-live.sql) في SQL Editor
 ```
 
-السكربت يحوّل الصور إلى نسختين (720px و1700px)، يرفعهما إلى التخزين،
-ثم يسجّل صفاً في جدول `works` مع العنوانين العربي والإنجليزي والوسوم.
+`build-photos.py` ينتج `assets/thumb|full/` و`js/photos.js` و`supabase/seed-photos.sql`
+من نفس المصدر، فلا تختلف النسخة المحلية عن السحابية.
 
+> بديل متقدّم: `scripts/publish-photos.py` يرفع النسخ إلى حاوية `gallery`
+> ويسجّل الصفوف بمفتاح `service_role`. يحتاج `.env` بمتغيّرين:
+> `SUPABASE_URL` و`SUPABASE_SERVICE_KEY`.
+>
 > ⚠️ مفتاح `service_role` يعمل بصلاحيات كاملة. ضعه في `.env` فقط
 > (مستثنى في `.gitignore`) ولا تضعه في `js/config.js` أبداً.
 
